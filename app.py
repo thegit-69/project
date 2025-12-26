@@ -24,7 +24,12 @@ db = SQL("sqlite:///medsafe.db")
 
 
 # a global variable for storing today
-TODAY = date.today()
+# TODAY = date.today()
+today_str = "2026-01-07" 
+format = "%Y-%m-%d"
+
+# Convert the string from html form to a date object
+TODAY = datetime.strptime(today_str, format).date()
 
 
 @app.after_request
@@ -52,6 +57,15 @@ def index():
     bal = curr_bal_ld[0]["cash"]
 
     total = bal + net
+    for ele in meds:
+        expiry_str = ele["expiry_date"]
+        format = "%Y-%m-%d"
+
+        # Convert the string from html form to a date object
+        expiry_date = datetime.strptime(expiry_str, format).date()
+        if TODAY >= expiry_date:
+            flash("Expired!!!!")
+            return redirect("/dispose")
     return render_template("index.html", meds=meds, bal=bal, total=total)
 
 
@@ -282,3 +296,22 @@ def changepwd():
         flash("Password updated Successfully!!")
         return redirect("/")
     return render_template("changepwd.html")
+
+
+
+
+@app.route("/dispose", methods=["GET", "POST"])
+@login_required
+def dispose():
+    meds = db.execute("SELECT name, expiry_date, quantity, price FROM medicines WHERE user_id = ? GROUP BY expiry_date ORDER BY expiry_date;", session["user_id"])
+    todispose = {}
+    for ele in meds:
+        expiry_str = ele["expiry_date"]
+        format = "%Y-%m-%d"
+
+        # # Convert the string from html form to a date object
+        # expiry_date = datetime.strptime(expiry_str, format).date()
+        # if TODAY >= expiry_date:
+        #     for key in ele.key():
+        #         todispose["key"]
+    return render_template("dispose.html", meds=meds)
