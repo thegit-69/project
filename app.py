@@ -40,8 +40,19 @@ def after_request(response):
 @login_required
 def index():
     # need to show the medicines stock
-    meds = db.execute("SELECT name, COUNT(quantity) AS quantity, price,")
-    return render_template("index.html")
+    meds = db.execute("SELECT name, expiry_date, quantity, price FROM medicines WHERE user_id = ? GROUP BY expiry_date ORDER BY expiry_date;", session["user_id"])
+
+    net = 0
+    for ele in meds:
+        ele["TOTAL"] = ele["price"] * ele["quantity"]
+        net += ele["TOTAL"]
+    # bal = ?
+    # curr_bal = current balance a user has and ld = list of dict
+    curr_bal_ld = db.execute("SELECT cash FROM users WHERE id = ?;", session["user_id"])
+    bal = curr_bal_ld[0]["cash"]
+
+    total = bal + net
+    return render_template("index.html", meds=meds, bal=bal, total=total)
 
 
 

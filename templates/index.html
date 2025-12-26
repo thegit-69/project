@@ -9,32 +9,33 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th class="text-start">Stock</th>
-                <th class="text-end">Shares</th>
+                <th class="text-start">Medicine name</th>
+                <th class="text-end">Expiry date</th>
+                <!-- Add something like a status with indcators -->
+                <th class="text-end">Quantity</th>
                 <th class="text-end">Price</th>
                 <th class="text-end">TOTAL</th>
             </tr>
         </thead>
        <tbody>
-
-
-                {# {% for ele in portfolio %}
+                {% for ele in meds %}
                 <tr>
-                    <td class="text-start">{{ ele["symbol"] }}</td>
-                    <td class="text-end">{{ ele["shares"]}}</td>
+                    <td class="text-start">{{ ele["name"] }}</td>
+                    <td class="text-end">{{ ele["expiry_date"]}}</td>
+                    <td class="text-end">{{ ele["quantity"] }}</td>
                     <td class="text-end">{{ ele["price"] }}</td>
                     <td class="text-end">{{ ele["TOTAL"] }}</td>
                 </tr>
-            {% endfor %} #}
+            {% endfor %}
         </tbody>
         <tfoot>
             <tr>
                 <td class="border-0 fw-bold text-end" colspan="3">Cash</td>
-                <td class="border-0 text-end">{# {{ bal }}  #}</td>
+                <td class="border-0 text-end">{{ bal }}  </td>
             </tr>
             <tr>
                 <td class="border-0 fw-bold text-end" colspan="3">TOTAL</td>
-                <td class="border-0 w-bold text-end">{# {{ total }}  #}</td>
+                <td class="border-0 w-bold text-end">{{ total }}</td>
             </tr>
         </tfoot>
     </table>
