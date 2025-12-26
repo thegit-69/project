@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Dash Board
+{% endblock %}
+
+{% block main %}
+    <br>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-start">Stock</th>
+                <th class="text-end">Shares</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">TOTAL</th>
+            </tr>
+        </thead>
+       <tbody>
+
+
+                {# {% for ele in portfolio %}
+                <tr>
+                    <td class="text-start">{{ ele["symbol"] }}</td>
+                    <td class="text-end">{{ ele["shares"]}}</td>
+                    <td class="text-end">{{ ele["price"] }}</td>
+                    <td class="text-end">{{ ele["TOTAL"] }}</td>
+                </tr>
+            {% endfor %} #}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="3">Cash</td>
+                <td class="border-0 text-end">{# {{ bal }}  #}</td>
+            </tr>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="3">TOTAL</td>
+                <td class="border-0 w-bold text-end">{# {{ total }}  #}</td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}

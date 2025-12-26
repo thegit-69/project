@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add medicines
+{% endblock %}
+
+{% block main %}
+    <form action="/addmeds" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="name" placeholder="Enter medicine name" type="text">
+        </div>
+        <div class="mb-3">
+            <input class="form-control mx-auto w-auto" name="quantity" placeholder="Enter quantity" type="number" min="1">
+        </div>
+        <div class="mb-3">
+            <input class="form-control mx-auto w-auto" name="price" placeholder="Enter price" type="number" min="1">
+        </div>
+        <div class="mb-3">
+            <p>Enter purchase date</p><input class="form-control mx-auto w-auto" name="purchase_date" placeholder="Enter purchase date" type="date">
+        </div>
+        <div class="mb-3">
+            <p>Enter expiry date</p>
+            <input class="form-control mx-auto w-auto" name="expiry_date" placeholder="Enter expiry date" type="date">
+        </div>
+        <button class="btn btn-primary" type="submit">Add medicines</button>
+    </form>
+{% endblock %}
