@@ -1,5 +1,5 @@
 import requests
-from datetime import date, datetime
+from datetime import date
 from dateutil.relativedelta import relativedelta
 from flask import redirect, render_template, session
 from functools import wraps
