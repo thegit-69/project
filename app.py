@@ -24,12 +24,12 @@ db = SQL("sqlite:///medsafe.db")
 
 
 # a global variable for storing today
-# TODAY = date.today()
-today_str = "2026-01-07" 
-format = "%Y-%m-%d"
+TODAY = date.today()
+# today_str = "2026-01-07" 
+# format = "%Y-%m-%d"
 
-# Convert the string from html form to a date object
-TODAY = datetime.strptime(today_str, format).date()
+# # Convert the string from html form to a date object
+# TODAY = datetime.strptime(today_str, format).date()
 
 
 @app.after_request
