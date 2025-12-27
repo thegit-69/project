@@ -328,7 +328,8 @@ def dispose():
         if loss_amount > bal:
             new_bal = max(0,bal - loss_amount)
             db.execute("UPDATE users set CASH = ? WHERE id = ?", new_bal, session["user_id"])
-        db.execute("UPDATE users set CASH = ? WHERE id = ?", bal - loss_amount, session["user_id"])
+        else:
+            db.execute("UPDATE users set CASH = ? WHERE id = ?", bal - loss_amount, session["user_id"])
 
         # logging the transaction inside logbook
         db.execute("INSERT INTO logbook(user_id, med_name, trans_type, amount) VALUES(?,?,?,?)", session["user_id"], medname, "LOSS", -loss_amount)
