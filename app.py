@@ -63,6 +63,9 @@ def index():
         if TODAY >= expiry_date:
             flash("Expired Please dispose these medicines!!", "error")
             return redirect("/dispose")
+        
+    # we need to implement alert logic
+    
     return render_template("index.html", meds=meds, bal=bal, total=total)
 
 
@@ -329,4 +332,4 @@ def dispose():
         flash("Disposed expired medicines!!")
         return redirect("/")
         
-    return render_template("dispose.html", meds=meds, today=str(TODAY))
+    return render_template("dispose.html", meds=meds,today=str(TODAY))

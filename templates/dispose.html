@@ -20,7 +20,6 @@
             </tr>
         </thead>
        <tbody>
-            {{ meds }}
                 {% for ele in meds %}
                 <tr>
                     <td class="text-start">{{ ele["name"] }}</td>
@@ -30,8 +29,13 @@
                     <td class="text-end">
                     <form action="/dispose" method="post">
                         <!-- <span class="badge text-bg-danger rounded-pill"></span> -->
+                         <!-- <div class="badge text-bg-danger rounded-pill">
+                            
+                         </div> -->
                         <input name="id" type="hidden" value="{{ ele.id }}">
-                        <input type="submit" value="Dispose">
+                        <button type="submit" class="btn btn-danger btn-sm rounded-pill">
+                            Dispose
+                        </button>
                          <!-- <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Danger</span> -->
                     </form>
                     </td>
