@@ -1,8 +1,7 @@
 cs50
-datetime
-dateutil
 Flask
 Flask-Session
 python-dateutil
 pytz
 requests
+Werkzeug==2.3.6

@@ -3,3 +3,10 @@ __pycache__/
 flask_session/
 *.db
 test.html
+.DS_Store
+*.sqlite
+*.sqlite3
+medsafe.db
+venv/
+.env
+.vscode/
