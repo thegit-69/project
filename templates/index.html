@@ -16,6 +16,7 @@
                 <th class="text-end">Quantity</th>
                 <th class="text-end">Price</th>
                 <th class="text-end">TOTAL</th>
+                <th class="text-end">Sell</th>
             </tr>
         </thead>
        <tbody>
@@ -31,12 +32,24 @@
                     {% else %}
                     <td class="text-end"><span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis rounded-pill">Expired-Dispose</span></td>
                     {% endif %}
-                    <!-- <td class="text-end">{{ ele["status"] }}</td> -->
             
                     <td class="text-end">{{ ele["expiry_date"] }}</td>
                     <td class="text-end">{{ ele["quantity"] }}</td>
                     <td class="text-end">{{ ele["price"] }}</td>
-                    <td class="text-end">{{ ele["TOTAL"] }}</td>
+                    <td class="text-end">{{ ele["TOTAL"] }}</td> 
+                    <td class="text-end">
+                    {% if ele.status == "expired" %}
+                    <form action="/dispose" method="post">
+                        <input name="id" type="hidden" value="{{ ele.id }}">
+                        <button type="submit" class="btn btn-danger">Dispose</button>
+                    </form>
+                    {% else %}
+                    <form action="/sell" method="post">
+                        <input name="sellid" type="hidden" value="{{ ele.id }}">
+                        <button type="submit" class="btn btn-success">Sell</button>
+                    </form>
+                    {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

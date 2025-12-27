@@ -43,7 +43,7 @@ def after_request(response):
 @login_required
 def index():
     # need to show the medicines stock
-    meds = db.execute("SELECT name, expiry_date, quantity, price FROM medicines WHERE user_id = ? ORDER BY expiry_date;", session["user_id"])
+    meds = db.execute("SELECT id, name, expiry_date, quantity, price FROM medicines WHERE user_id = ? ORDER BY expiry_date;", session["user_id"])
 
     net = 0
     for ele in meds:
@@ -323,7 +323,7 @@ def changepwd():
 @app.route("/dispose", methods=["GET", "POST"])
 @login_required
 def dispose():
-    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date >= ? ORDER BY expiry_date", session["user_id"], str(TODAY))
+    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date <= ? ORDER BY expiry_date", session["user_id"], str(TODAY))
     if request.method == "POST":
         id = request.form.get("id")
         if not id:
