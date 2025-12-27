@@ -5,7 +5,40 @@
 {% endblock %}
 
 {% block main %}
-    <br>
+    <!-- The status legend(only the below divsion) has been adapted using chatgpt.com  -->
+    <div class="row mb-4">
+    <!-- LEFT: Status Legend -->
+    <div class="col-md-4">
+        <div class="card bg-dark border-secondary">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Status Legend</h6>
+
+                <div class="mb-2">
+                    <span class="badge bg-danger-subtle border border-danger-subtle text-danger-emphasis rounded-pill">Critical</span>
+                    <small class="ms-2">E.D ≤ 15 days</small>
+                </div>
+
+                <div class="mb-2">
+                    <span class="badge bg-warning-subtle border border-warning-subtle text-warning-emphasis rounded-pill">Near expiry</span>
+                    <small class="ms-2">E.D ≤ 1 month</small>
+                </div>
+
+                <div class="mb-2">
+                    <span class="badge bg-success-subtle border border-success-subtle text-success-emphasis rounded-pill">Safe</span>
+                    <small class="ms-2">E.D > 2 months</small>
+                </div>
+
+                <div>
+                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis rounded-pill">Expired</span>
+                    <small class="ms-2">Dispose immediately</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -24,13 +57,13 @@
                 <tr>
                     <td class="text-start">{{ ele["name"] }}</td>
                     {% if ele.status == "red" %} 
-                    <td class="text-end"><span class="badge bg-danger-subtle border border-danger-subtle text-danger-emphasis rounded-pill">Clearance sale</span></td>
+                    <td class="text-end"><span class="badge bg-danger-subtle border border-danger-subtle text-danger-emphasis rounded-pill">Critical</span></td>
                     {% elif ele.status == "yellow" %}
-                    <td class="text-end"><span class="badge bg-warning-subtle border border-warning-subtle text-warning-emphasis rounded-pill">Give discounts</span></td>
+                    <td class="text-end"><span class="badge bg-warning-subtle border border-warning-subtle text-warning-emphasis rounded-pill">Near expiry</span></td>
                     {% elif ele.status == "green" %}
-                    <td class="text-end"><span class="badge bg-success-subtle border border-success-subtle text-success-emphasis rounded-pill">Sell full price</span></td>
+                    <td class="text-end"><span class="badge bg-success-subtle border border-success-subtle text-success-emphasis rounded-pill">Safe</span></td>
                     {% else %}
-                    <td class="text-end"><span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis rounded-pill">Expired-Dispose</span></td>
+                    <td class="text-end"><span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis rounded-pill">Expired</span></td>
                     {% endif %}
             
                     <td class="text-end">{{ ele["expiry_date"] }}</td>
@@ -55,11 +88,11 @@
         </tbody>
         <tfoot>
             <tr>
-                <td class="border-0 fw-bold text-end" colspan="3">Cash</td>
+                <td class="border-0 fw-bold text-end" colspan="5">Cash</td>
                 <td class="border-0 text-end">{{ bal }}  </td>
             </tr>
             <tr>
-                <td class="border-0 fw-bold text-end" colspan="3">TOTAL</td>
+                <td class="border-0 fw-bold text-end" colspan="5">TOTAL</td>
                 <td class="border-0 w-bold text-end">{{ total }}</td>
             </tr>
         </tfoot>
