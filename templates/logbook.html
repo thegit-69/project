@@ -22,7 +22,7 @@
                 <tr>
                     <td class="text-start">{{ ele["med_name"] }}</td>
                     <td class="text-end">{{ ele["trans_type"]}}</td>
-                    <td class="text-end">{{ ele["amount"] }}</td>
+                    <td class="text-end">{{ ele["amount"] | inr }}</td>
                     <td class="text-end">{{ ele["transacted_at"] }}</td>
                 </tr>
             {% endfor %}

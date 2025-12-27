@@ -47,9 +47,9 @@ def login_required(f):
 
 
 
-def usd(value):
-    """Format value as USD."""
-    return f"${value:,.2f}"
+def inr(value):
+    """Format value as INR."""
+    return f"₹{value:,.2f}"
 
 
 def get_status(expiry_date):

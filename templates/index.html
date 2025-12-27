@@ -72,8 +72,8 @@ Finance pset https://cs50.harvard.edu/x/psets/9/finance/ -->
             
                     <td class="text-end">{{ ele["expiry_date"] }}</td>
                     <td class="text-end">{{ ele["quantity"] }}</td>
-                    <td class="text-end">{{ ele["price"] }}</td>
-                    <td class="text-end">{{ ele["TOTAL"] }}</td> 
+                    <td class="text-end">{{ ele["price"] | inr }}</td>
+                    <td class="text-end">{{ ele["TOTAL"] | inr }}</td> 
                     <td class="text-end">
                     {% if ele.status == "expired" %}
                     <form action="/dispose" method="post">
@@ -93,11 +93,11 @@ Finance pset https://cs50.harvard.edu/x/psets/9/finance/ -->
         <tfoot>
             <tr>
                 <td class="border-0 fw-bold text-end" colspan="5">Cash</td>
-                <td class="border-0 text-end">{{ bal }}  </td>
+                <td class="border-0 text-end">{{ bal | inr }}  </td>
             </tr>
             <tr>
                 <td class="border-0 fw-bold text-end" colspan="5">TOTAL</td>
-                <td class="border-0 w-bold text-end">{{ total }}</td>
+                <td class="border-0 w-bold text-end">{{ total | inr }}</td>
             </tr>
         </tfoot>
     </table>
