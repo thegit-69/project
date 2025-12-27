@@ -1,5 +1,6 @@
 import requests
-
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from flask import redirect, render_template, session
 from functools import wraps
 
@@ -49,3 +50,14 @@ def login_required(f):
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+
+
+def get_status(expiry_date):
+    today = date.today()
+    if expiry_date < today:
+        return "expired"
+    elif expiry_date <= today + relativedelta(days=15):
+        return "red"
+    elif expiry_date <= today + relativedelta(months=1):
+        return "yellow"
+    return "green"

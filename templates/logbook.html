@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log Book
+{% endblock %}
+
+{% block main %}
+    <br>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-start">Medicine name</th>
+                <th class="text-end">Transaction Type</th>
+                <th class="text-end">Amount</th>
+                <th class="text-end">Transacted at</th>
+            </tr>
+        </thead>
+       <tbody>
+
+
+            {% for ele in trasactions %}
+                <tr>
+                    <td class="text-start">{{ ele["med_name"] }}</td>
+                    <td class="text-end">{{ ele["trans_type"]}}</td>
+                    <td class="text-end">{{ ele["amount"] }}</td>
+                    <td class="text-end">{{ ele["transacted_at"] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

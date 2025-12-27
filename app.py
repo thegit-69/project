@@ -1,3 +1,5 @@
+# Some of part of the code has been adapted from cs50 
+# Finance pset https://cs50.harvard.edu/x/psets/9/finance/
 import os
 
 from cs50 import SQL
@@ -7,7 +9,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, usd
+from helpers import apology, login_required, usd, get_status
 
 # Configure application
 app = Flask(__name__)
@@ -24,12 +26,6 @@ Session(app)
 db = SQL("sqlite:///medsafe.db")
 
 
-# a global variable for storing today
-TODAY = date.today()
-# TODAY = date(2026,6,12)
-
-
-
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -44,12 +40,10 @@ def after_request(response):
 def index():
     # need to show the medicines stock
     meds = db.execute("SELECT id, name, expiry_date, quantity, price FROM medicines WHERE user_id = ? ORDER BY expiry_date;", session["user_id"])
-
     net = 0
     for ele in meds:
         ele["TOTAL"] = ele["price"] * ele["quantity"]
         net += ele["TOTAL"]
-    # bal = ?
     # curr_bal = current balance a user has and ld = list of dict
     curr_bal_ld = db.execute("SELECT cash FROM users WHERE id = ?;", session["user_id"])
     bal = curr_bal_ld[0]["cash"]
@@ -64,28 +58,7 @@ def index():
         # Convert the string from html form to a date object
         expiry_date = datetime.strptime(expiry_str, format).date()
 
-        # Finding two_months before expiry if TODAY > two_months => GREEN status
-        rdelta = relativedelta(months=2)
-        two_months_before = expiry_date - rdelta
-        # Finding one_month before expiry => YELLOW status
-        rdelta = relativedelta(months=1)
-        one_month_before = expiry_date - rdelta
-        # Finding 15 days before expiry => RED => STATUS
-        rdelta = relativedelta(days=15)
-        onefive = expiry_date - rdelta
-        # Checking if the medicine is expired
-        # if yes then the user must dispose medicine and money is lost as it is a loss
-        if TODAY <= two_months_before:
-            ele["status"] = "green"
-            # we need to send alert how the idk
-        elif TODAY <= one_month_before:
-            ele["status"] = "yellow"
-        elif TODAY < expiry_date:
-            ele["status"] = "red"
-        elif TODAY >= expiry_date:
-            ele["status"] = "expired"
-    # return render_template("test.html", two=two_months_before, exp=expiry_date, one=one_month_before, onefive=onefive)
-    # we need to implement alert logic
+        ele["status"] = get_status(expiry_date)
     return render_template("index.html", meds=meds, bal=bal, total=total)
 
 
@@ -127,9 +100,9 @@ def addmeds():
         expiry_date = datetime.strptime(expiry_date_str, format).date()
 
         # validating dates
-        if purchase_date > TODAY:
+        if purchase_date > date.today():
             return apology("You cannot purchase from future")
-        elif expiry_date <= TODAY:
+        elif expiry_date <= date.today():
             return apology("Dont buy it is expired")
         
         # curr_bal = current balance a user has and ld = list of dict
@@ -148,18 +121,21 @@ def addmeds():
         # Deducting cost from user account bal
         db.execute("UPDATE users set cash = ? WHERE id = ?", bal - cost, session["user_id"])
 
+        # logging the transaction inside logbook
+        db.execute("INSERT INTO logbook(user_id, med_name, trans_type, amount) VALUES(?,?,?,?)", session["user_id"], medname, "BOUGHT", -cost)
+
         # if everthing is successfull we will redirect back to index with added medcines
         flash("Medicines bought!!")
         return redirect("/")
     return render_template("addmeds.html")
 
 
-# @app.route("/history")
-# @login_required
-# def history():
-#     """Show history of transactions"""
-#     purchases = db.execute("SELECT symbol, shares, price, purchased_at FROM purchases WHERE user_id = ?", session["user_id"])
-#     return render_template("history.html", purchases=purchases)
+@app.route("/logbook")
+@login_required 
+def logbook():
+    """Show logbook of transactions"""
+    trasactions = db.execute("SELECT med_name, trans_type, amount, transacted_at FROM logbook WHERE user_id = ?", session["user_id"])
+    return render_template("logbook.html", trasactions=trasactions)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -212,9 +188,6 @@ def logout():
     return redirect("/")
 
 
-
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -242,7 +215,7 @@ def register():
 @login_required
 def sell():
     # here meds are unexpired meds
-    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date > ? ORDER BY expiry_date", session["user_id"], str(TODAY))
+    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date > ? ORDER BY expiry_date", session["user_id"], str(date.today()))
     if request.method == "POST":
         id_str = request.form.get("medid")
         if not id_str:
@@ -258,6 +231,7 @@ def sell():
         flag = False
         for ele in meds:
             if int(id) == int(ele["id"]):
+                medname = ele["name"]
                 flag = True
         
         if not flag:
@@ -272,6 +246,9 @@ def sell():
         cash = db.execute("SELECT quantity * price AS profit FROM medicines WHERE id = ?", id)
         profit = cash[0]["profit"]
         db.execute("UPDATE users set CASH = ? WHERE id = ?", bal + profit, session["user_id"])
+
+        # logging the transaction inside logbook
+        db.execute("INSERT INTO logbook(user_id, med_name, trans_type, amount) VALUES(?,?,?,?)", session["user_id"], medname, "SOLD", profit)
         # deleting that batch of medicines using the medicine is
         db.execute("DELETE FROM medicines WHERE id = ?", id)
         flash("Sold!!")
@@ -316,12 +293,10 @@ def changepwd():
     return render_template("changepwd.html")
 
 
-
-
 @app.route("/dispose", methods=["POST"])
 @login_required
 def dispose():
-    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date <= ? ORDER BY expiry_date", session["user_id"], str(TODAY))
+    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date <= ? ORDER BY expiry_date", session["user_id"], str(date.today()))
     if request.method == "POST":
         id_str = request.form.get("id")
         if not id_str:
@@ -335,6 +310,7 @@ def dispose():
         flag = False
         for ele in meds:
             if int(id) == int(ele["id"]):
+                medname = ele["name"]
                 flag = True
         
         if not flag:
@@ -349,7 +325,13 @@ def dispose():
         # loss because we are going to lose money as we didn't sale this medicines so waste
         loss = db.execute("SELECT quantity * price AS loss FROM medicines WHERE id = ?", id)
         loss_amount = loss[0]["loss"]
+        if loss_amount > bal:
+            new_bal = max(0,bal - loss_amount)
+            db.execute("UPDATE users set CASH = ? WHERE id = ?", new_bal, session["user_id"])
         db.execute("UPDATE users set CASH = ? WHERE id = ?", bal - loss_amount, session["user_id"])
+
+        # logging the transaction inside logbook
+        db.execute("INSERT INTO logbook(user_id, med_name, trans_type, amount) VALUES(?,?,?,?)", session["user_id"], medname, "LOSS", -loss_amount)
         # deleting that batch of medicines using the medicine is
         db.execute("DELETE FROM medicines WHERE id = ?", id)
         flash("Disposed expired medicines!!")
