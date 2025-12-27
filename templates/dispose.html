@@ -28,15 +28,10 @@
                     <td class="text-end">{{ ele["price"] }}</td>
                     <td class="text-end">
                     <form action="/dispose" method="post">
-                        <!-- <span class="badge text-bg-danger rounded-pill"></span> -->
-                         <!-- <div class="badge text-bg-danger rounded-pill">
-                            
-                         </div> -->
                         <input name="id" type="hidden" value="{{ ele.id }}">
                         <button type="submit" class="btn btn-danger btn-sm rounded-pill">
                             Dispose
                         </button>
-                         <!-- <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Danger</span> -->
                     </form>
                     </td>
                 </tr>

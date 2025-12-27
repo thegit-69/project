@@ -2,6 +2,7 @@
 #### Video Demo:  <URL HERE>
 #### Description:
 TODO
+0. Remove get end point on dispose
 1. Build the expiry alert logic
 2. IN index.html try add those bootstrap status depending upon the   
 expiry date if   

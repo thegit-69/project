@@ -238,46 +238,44 @@ def register():
     return render_template("register.html")
 
 
-# @app.route("/sell", methods=["GET", "POST"])
-# @login_required
-# def sell():
-#     portfolio = db.execute("SELECT DISTINCT(symbol), SUM(shares) AS shares FROM purchases WHERE user_id = ? GROUP BY symbol ORDER BY symbol;", session["user_id"])
-#     stocks = []
-#     for stock in portfolio:
-#         stocks += [stock["symbol"]]
-#     if request.method == "POST":
-#         symbol = request.form.get("symbol")
-#         shares = request.form.get("shares")
-#         # nshares is the no. of shares user owns of that symbol
-#         if not symbol:
-#             return apology("Please select some share symbol to sell!!")
-#         elif symbol not in stocks:
-#             return apology("Please select some share symbol THAT you own!!!")
-#         elif (not shares.isdigit()):
-#             return apology("Shares cannot be empty or  -ve")
+@app.route("/sell", methods=["POST"])
+@login_required
+def sell():
+    # here meds are unexpired meds
+    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date > ? ORDER BY expiry_date", session["user_id"], str(TODAY))
+    if request.method == "POST":
+        id_str = request.form.get("medid")
+        if not id_str:
+            return apology("Id cannot be empty!!")
+        elif not id_str.isdigit():
+            return apology("-ve and char ids are not allowed!")
+        try:
+            id = int(id_str)
+        except ValueError:
+            return apology("Fractional is are not allowed!!")
+        
+        # validating if id is not present
+        flag = False
+        for ele in meds:
+            if int(id) == int(ele["id"]):
+                flag = True
+        
+        if not flag:
+            return apology("Id does not exists")
 
-#         for stock in portfolio:
-#             if (symbol == stock["symbol"]):
-#                 nshares = stock["shares"]
+        # also todo add that much amount from user account bal 
+        # Finding account balance
+        curr_bal_ld = db.execute("SELECT cash FROM users WHERE id = ?;", session["user_id"])
+        bal = curr_bal_ld[0]["cash"]
 
-#         if (int(shares) > nshares):
-#             return apology("You don't own that many shares!!")
-
-#         # after the above validation we need to sell
-#         # selling shares means reducing shares count and adding the money to the account
-#         # first we need to see how much cost 1 share right now
-#         # quote = lookup(symbol)
-#         price = quote["price"]
-#         cost = float(shares) * float(price)
-#         # reduce that many shares
-#         db.execute("INSERT INTO purchases(user_id,symbol,shares,price) VALUES (?,?,?,?);", session["user_id"], symbol, -int(shares), usd(price))
-#         # also add the balance cash in users table
-#         curr_bal_ld = db.execute("SELECT cash FROM users WHERE id = ?;", session["user_id"])
-#         bal = curr_bal_ld[0]["cash"]
-#         db.execute("UPDATE users set CASH = ? WHERE id = ?", bal + cost, session["user_id"])
-#         flash("Sold!!")
-#         return redirect("/")
-#     return render_template("sell.html", stocks=stocks)
+        # Finding the cost of the profit = price * quantity
+        cash = db.execute("SELECT quantity * price AS profit FROM medicines WHERE id = ?", id)
+        profit = cash[0]["profit"]
+        db.execute("UPDATE users set CASH = ? WHERE id = ?", bal + profit, session["user_id"])
+        # deleting that batch of medicines using the medicine is
+        db.execute("DELETE FROM medicines WHERE id = ?", id)
+        flash("Sold!!")
+        return redirect("/")
 
 
 # Allow users to add additional cash to their account.
@@ -320,15 +318,20 @@ def changepwd():
 
 
 
-@app.route("/dispose", methods=["GET", "POST"])
+@app.route("/dispose", methods=["POST"])
 @login_required
 def dispose():
     meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date <= ? ORDER BY expiry_date", session["user_id"], str(TODAY))
     if request.method == "POST":
-        id = request.form.get("id")
-        if not id:
+        id_str = request.form.get("id")
+        if not id_str:
             return apology("Medicine id cannot be empty Try Again!!")
-        
+        elif not id_str.isdigit():
+            return apology("id cannot be a string or fractional parts are not allowed!")
+        try:
+            id = int(id_str)
+        except ValueError:
+            return apology("Fractional shares are not allowed!!")
         flag = False
         for ele in meds:
             if int(id) == int(ele["id"]):
@@ -350,6 +353,4 @@ def dispose():
         # deleting that batch of medicines using the medicine is
         db.execute("DELETE FROM medicines WHERE id = ?", id)
         flash("Disposed expired medicines!!")
-        return redirect("/")
-        
-    return render_template("dispose.html", meds=meds,today=str(TODAY))
+        return redirect("/")    
