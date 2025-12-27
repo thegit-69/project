@@ -10,8 +10,9 @@
         <thead>
             <tr>
                 <th class="text-start">Medicine name</th>
-                <th class="text-end">Expiry date</th>
+                <th class="text-end">Status</th>
                 <!-- Add something like a status with indcators -->
+                 <th class="text-end">Expiry date</th>
                 <th class="text-end">Quantity</th>
                 <th class="text-end">Price</th>
                 <th class="text-end">TOTAL</th>
@@ -21,7 +22,18 @@
                 {% for ele in meds %}
                 <tr>
                     <td class="text-start">{{ ele["name"] }}</td>
-                    <td class="text-end">{{ ele["expiry_date"]}}</td>
+                    {% if ele.status == "red" %} 
+                    <td class="text-end"><span class="badge bg-danger-subtle border border-danger-subtle text-danger-emphasis rounded-pill">Clearance sale</span></td>
+                    {% elif ele.status == "yellow" %}
+                    <td class="text-end"><span class="badge bg-warning-subtle border border-warning-subtle text-warning-emphasis rounded-pill">Give discounts</span></td>
+                    {% elif ele.status == "green" %}
+                    <td class="text-end"><span class="badge bg-success-subtle border border-success-subtle text-success-emphasis rounded-pill">Sell full price</span></td>
+                    {% else %}
+                    <td class="text-end"><span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis rounded-pill">Expired-Dispose</span></td>
+                    {% endif %}
+                    <!-- <td class="text-end">{{ ele["status"] }}</td> -->
+            
+                    <td class="text-end">{{ ele["expiry_date"] }}</td>
                     <td class="text-end">{{ ele["quantity"] }}</td>
                     <td class="text-end">{{ ele["price"] }}</td>
                     <td class="text-end">{{ ele["TOTAL"] }}</td>

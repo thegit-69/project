@@ -2,6 +2,7 @@ import os
 
 from cs50 import SQL
 from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -55,17 +56,36 @@ def index():
 
     total = bal + net
     for ele in meds:
+        # default status value
+        ele["status"] = "unknown" 
         expiry_str = ele["expiry_date"]
         format = "%Y-%m-%d"
 
         # Convert the string from html form to a date object
         expiry_date = datetime.strptime(expiry_str, format).date()
-        if TODAY >= expiry_date:
-            flash("Expired Please dispose these medicines!!", "error")
-            return redirect("/dispose")
-        
+
+        # Finding two_months before expiry if TODAY > two_months => GREEN status
+        rdelta = relativedelta(months=2)
+        two_months_before = expiry_date - rdelta
+        # Finding one_month before expiry => YELLOW status
+        rdelta = relativedelta(months=1)
+        one_month_before = expiry_date - rdelta
+        # Finding 15 days before expiry => RED => STATUS
+        rdelta = relativedelta(days=15)
+        onefive = expiry_date - rdelta
+        # Checking if the medicine is expired
+        # if yes then the user must dispose medicine and money is lost as it is a loss
+        if TODAY <= two_months_before:
+            ele["status"] = "green"
+            # we need to send alert how the idk
+        elif TODAY <= one_month_before:
+            ele["status"] = "yellow"
+        elif TODAY < expiry_date:
+            ele["status"] = "red"
+        elif TODAY >= expiry_date:
+            ele["status"] = "expired"
+    # return render_template("test.html", two=two_months_before, exp=expiry_date, one=one_month_before, onefive=onefive)
     # we need to implement alert logic
-    
     return render_template("index.html", meds=meds, bal=bal, total=total)
 
 
