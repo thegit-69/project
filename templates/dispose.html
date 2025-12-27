@@ -6,6 +6,7 @@
 
 {% block main %}
     <br>
+    <pre>Today date: {{ today }}</pre>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -14,16 +15,26 @@
                 <!-- Add something like a status with indcators -->
                 <th class="text-end">Quantity</th>
                 <th class="text-end">Price</th>
+                <th class="text-end">Dispose</th>
                 <!-- <th class="text-end">TOTAL</th> -->
             </tr>
         </thead>
        <tbody>
+            {{ meds }}
                 {% for ele in meds %}
                 <tr>
                     <td class="text-start">{{ ele["name"] }}</td>
                     <td class="text-end">{{ ele["expiry_date"]}}</td>
                     <td class="text-end">{{ ele["quantity"] }}</td>
                     <td class="text-end">{{ ele["price"] }}</td>
+                    <td class="text-end">
+                    <form action="/dispose" method="post">
+                        <!-- <span class="badge text-bg-danger rounded-pill"></span> -->
+                        <input name="id" type="hidden" value="{{ ele.id }}">
+                        <input type="submit" value="Dispose">
+                         <!-- <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Danger</span> -->
+                    </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

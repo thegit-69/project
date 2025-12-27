@@ -25,11 +25,8 @@ db = SQL("sqlite:///medsafe.db")
 
 # a global variable for storing today
 TODAY = date.today()
-# today_str = "2026-01-07" 
-# format = "%Y-%m-%d"
+# TODAY = date(2026,6,12)
 
-# # Convert the string from html form to a date object
-# TODAY = datetime.strptime(today_str, format).date()
 
 
 @app.after_request
@@ -45,7 +42,7 @@ def after_request(response):
 @login_required
 def index():
     # need to show the medicines stock
-    meds = db.execute("SELECT name, expiry_date, quantity, price FROM medicines WHERE user_id = ? GROUP BY expiry_date ORDER BY expiry_date;", session["user_id"])
+    meds = db.execute("SELECT name, expiry_date, quantity, price FROM medicines WHERE user_id = ? ORDER BY expiry_date;", session["user_id"])
 
     net = 0
     for ele in meds:
@@ -64,7 +61,7 @@ def index():
         # Convert the string from html form to a date object
         expiry_date = datetime.strptime(expiry_str, format).date()
         if TODAY >= expiry_date:
-            flash("Expired!!!!")
+            flash("Expired Please dispose these medicines!!", "error")
             return redirect("/dispose")
     return render_template("index.html", meds=meds, bal=bal, total=total)
 
@@ -303,15 +300,33 @@ def changepwd():
 @app.route("/dispose", methods=["GET", "POST"])
 @login_required
 def dispose():
-    meds = db.execute("SELECT name, expiry_date, quantity, price FROM medicines WHERE user_id = ? GROUP BY expiry_date ORDER BY expiry_date;", session["user_id"])
-    todispose = {}
-    for ele in meds:
-        expiry_str = ele["expiry_date"]
-        format = "%Y-%m-%d"
+    meds = db.execute("SELECT id,name, expiry_date, quantity, price FROM medicines WHERE user_id = ? and expiry_date >= ? ORDER BY expiry_date", session["user_id"], str(TODAY))
+    if request.method == "POST":
+        id = request.form.get("id")
+        if not id:
+            return apology("Medicine id cannot be empty Try Again!!")
+        
+        flag = False
+        for ele in meds:
+            if int(id) == int(ele["id"]):
+                flag = True
+        
+        if not flag:
+            return apology("Id does not exists")
 
-        # # Convert the string from html form to a date object
-        # expiry_date = datetime.strptime(expiry_str, format).date()
-        # if TODAY >= expiry_date:
-        #     for key in ele.key():
-        #         todispose["key"]
-    return render_template("dispose.html", meds=meds)
+        # also todo reduce that much amount from user account bal 
+        # Finding account balance
+        curr_bal_ld = db.execute("SELECT cash FROM users WHERE id = ?;", session["user_id"])
+        bal = curr_bal_ld[0]["cash"]
+
+        # Finding the cost of the loss = price * quantity
+        # loss because we are going to lose money as we didn't sale this medicines so waste
+        loss = db.execute("SELECT quantity * price AS loss FROM medicines WHERE id = ?", id)
+        loss_amount = loss[0]["loss"]
+        db.execute("UPDATE users set CASH = ? WHERE id = ?", bal - loss_amount, session["user_id"])
+        # deleting that batch of medicines using the medicine is
+        db.execute("DELETE FROM medicines WHERE id = ?", id)
+        flash("Disposed expired medicines!!")
+        return redirect("/")
+        
+    return render_template("dispose.html", meds=meds, today=str(TODAY))
