@@ -26,6 +26,7 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db_is_new = not os.path.exists("medsafe.db")
 
+# This logic was adapted by using gemini 
 # 1. Create the file if it doesn't exist
 if db_is_new:
     open("medsafe.db", "w").close()
@@ -46,7 +47,6 @@ if db_is_new:
             if command.strip():
                 db.execute(command)
 
-# Remove the old init_db() function definition and call
 
 @app.after_request
 def after_request(response):
@@ -231,12 +231,19 @@ def register():
             # on purchase date and so expiry date 
             # For demonstration purposes i the admin/developer is going to insert some
             # Expired medicines
-            
             db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
                         session["user_id"], "Dolo",25, 5, "2025-06-24", "2025-11-25")
             
             db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
                         session["user_id"], "Pansec", 15, 10, "2025-04-21", "2025-12-25")
+            
+            # Also inserting some example values just for demonstrations purposes
+            db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
+                        session["user_id"], "azythromicin", 34, 10, "2025-12-28", "2026-01-11")
+            db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
+                        session["user_id"], "Citrizen", 5, 34, "2025-12-28", "2026-01-28")
+            db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
+                        session["user_id"], "Amoxyxicillin", 15, 16, "2025-12-28", "2026-05-28")
             flash("Registered")
             return redirect("/")
         except ValueError:
