@@ -226,6 +226,17 @@ def register():
         try:
             new_user_id = db.execute("INSERT INTO users(username, hash) VALUES(?,?)", name,generate_password_hash(password))
             session["user_id"] = new_user_id
+            
+            # As a user cannot insert expired medicines due to Proper validations on 
+            # on purchase date and so expiry date 
+            # For demonstration purposes i the admin/developer is going to insert some
+            # Expired medicines
+            
+            db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
+                        session["user_id"], "Dolo",25, 5, "2025-06-24", "2025-11-25")
+            
+            db.execute("INSERT INTO medicines(user_id, name, quantity,price, purchase_date, expiry_date) VALUES(?,?,?,?,?,?)",
+                        session["user_id"], "Pansec", 15, 10, "2025-04-21", "2025-12-25")
             flash("Registered")
             return redirect("/")
         except ValueError:
@@ -358,4 +369,4 @@ def dispose():
         # deleting that batch of medicines using the medicine is
         db.execute("DELETE FROM medicines WHERE id = ?", id)
         flash("Disposed expired medicines!!")
-        return redirect("/")    
+        return redirect("/logbook")    
