@@ -21,27 +21,32 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure CS50 Library to use SQLite database
-# ... existing imports ...
+-
 
 # Configure CS50 Library to use SQLite database
-# FIX: Check if file exists first. If not, create an empty file so SQL() doesn't crash.
 db_is_new = not os.path.exists("medsafe.db")
+
+# 1. Create the file if it doesn't exist
 if db_is_new:
     open("medsafe.db", "w").close()
 
-# Now it is safe to connect
+# 2. Connect to the database
 db = SQL("sqlite:///medsafe.db")
 
-# Create tables if it was a new database
+# 3. Create tables one by one
 if db_is_new:
-    with open("schema.sql") as f:
-        # Read the schema
-        schema = f.read()
-        # Execute the SQL commands to create tables
-        # Note: If this fails with a syntax error, you may need to execute statements one by one
-        db.execute(schema)
+    with open("databaseSchema.sql") as f:
+        script = f.read()
+        
+        # Split the script into a list of commands using the semicolon
+        commands = script.split(';')
+        
+        for command in commands:
+            # Check if the command has content (avoids empty lines at the end)
+            if command.strip():
+                db.execute(command)
 
+# Remove the old init_db() function definition and call
 
 @app.after_request
 def after_request(response):
