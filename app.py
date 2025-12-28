@@ -369,4 +369,4 @@ def dispose():
         # deleting that batch of medicines using the medicine is
         db.execute("DELETE FROM medicines WHERE id = ?", id)
         flash("Disposed expired medicines!!")
-        return redirect("/logbook")    
+        return redirect("/")    
