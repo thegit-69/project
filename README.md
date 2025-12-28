@@ -1,11 +1,11 @@
 # MedSafe: Pharmacy Management & Expiry Alert System 
-#### Video Demo:  <URL HERE>
+#### Video Demo:  <URL [HERE](https://youtu.be/NKj8IXGcR28)>
 #### Description:
 
 MedSafe: pharmacy Mangement & alert system  
 Medsafe is an webapp built for Pharmacies where users can add medicines, sell medicines, See their sales using logbook, users can also change their passwords. 
 
-This project is insipired by Harvard university CS50x course week 9 pset finance.  
+This project is inspired by Harvard university CS50x course week 9 pset finance.  
 https://cs50.harvard.edu/x/psets/9/finance/    
 
 You can access this project by going to
