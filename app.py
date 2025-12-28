@@ -35,7 +35,7 @@ db = SQL("sqlite:///medsafe.db")
 
 # 3. Create tables one by one
 if db_is_new:
-    with open("databaseSchema.sql") as f:
+    with open("schema.sql") as f:
         script = f.read()
         
         # Split the script into a list of commands using the semicolon
