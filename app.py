@@ -2,14 +2,6 @@
 # Finance pset https://cs50.harvard.edu/x/psets/9/finance/
 import os
 
-def init_db():
-    if not os.path.exists("medsafe.db"):
-        with open("databaseSchema.sql") as f:
-            db.execute(f.read())
-
-
-init_db()
-
 from cs50 import SQL
 from datetime import date, datetime
 from flask import Flask, flash, redirect, render_template, request, session
@@ -32,6 +24,12 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///medsafe.db")
 
+def init_db():
+    if not os.path.exists("medsafe.db"):
+        with open("databaseSchema.sql") as f:
+            db.execute(f.read())
+
+init_db()
 
 @app.after_request
 def after_request(response):
