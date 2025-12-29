@@ -22,7 +22,15 @@ Html, CSS, BootStrap
 **3. Deployment:**  
    Render
    Namecheap for domain     
-      
+  
+## Instructions to run this project on your PC  
+1. Git clone this repo https://github.com/thegit-69/project.git 
+2. In terminal run the following commands:    
+pip install -r requirements.txt  
+$env:FLASK_ENV="development"  
+$env:FLASK_DEBUG="1"  
+flask run
+3. Website will be live at http://127.0.0.1:5000/  
 
 ### Frontend  
 This project uses **Html,css and Bootstrap** for frontend.The design of this project is inspired and adapted form **CS50 finance assignment.**   
